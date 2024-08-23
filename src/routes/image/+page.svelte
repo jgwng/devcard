@@ -2,7 +2,8 @@
 	import Modal from './component/Modal.svelte';
 	import ImgElement from './component/svg_to_img.svelte';
     import { onMount } from 'svelte';
-	import { svgStore } from '../../stores/store.js'; 
+	import { svgStore } from '../../stores/store.js';
+	import {goto} from '$app/navigation'; 
 	export let data;
     let svgElement;
 	let svgDataUrl = '';
@@ -39,26 +40,21 @@
         }
     }
 
-	// Common function to handle image click and update the respective SVG element
 	async function handleImageClick(image, idPrefix, selectedIdSetter) {
 		const response = await fetch(image.src);
 		let svgText = await response.text();
 
-		// Create a DOM parser to parse the SVG string
 		const parser = new DOMParser();
 		const svgDoc = parser.parseFromString(svgText, "image/svg+xml");
 
-		// Find the element with an ID starting with the specified prefix
 		const element = svgDoc.querySelector(`[id^="${idPrefix}"]`);
 
-		// Insert the modified SVG into the poseElement
 		const poseElement = document.querySelector(`[id^="${idPrefix}"]`);
 		if (poseElement && element) {
 			poseElement.innerHTML = svgText;
 			poseElement.id = element.id;
 		}
-		svgStore.set(svgElement.innerHTML);
-		// Update the selected ID
+		
 		selectedIdSetter(image.id);
 	}
 
@@ -71,6 +67,11 @@
 	const handleHairstyleClick = (image) => handleImageClick(image, 'head', id => selectedHairstyleId = id);
 	const handleAccClick = (image) => handleImageClick(image, 'accessories', id => selectedAccId = id);
 	const handleFaceClick = (image) => handleImageClick(image, 'face', id => selectedFaceId = id);
+
+	function onTapMovePage(){
+		svgStore.set(svgElement.innerHTML);
+		goto('/');
+	}
 </script>
 
 <style>
@@ -122,6 +123,7 @@
 
 <div class="svg-container" bind:this={svgElement}></div>
 
-<!-- <ImgElement></ImgElement> -->
+<button on:click={onTapMovePage}>페이지 이동</button>
+
 
 

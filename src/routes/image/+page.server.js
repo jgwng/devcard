@@ -1,6 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
+export const prerender = true;
+
 function getSvgImagesFromDir(type) {
     const directory = path.join('static', type);
     const files = fs.readdirSync(directory).filter(file => file.endsWith('.svg'));
