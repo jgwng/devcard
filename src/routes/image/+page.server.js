@@ -8,18 +8,20 @@ function getSvgImagesFromDir(type) {
     const files = fs.readdirSync(directory).filter(file => file.endsWith('.svg'));
     return files.map((file, index) => ({
         id: index + 1,
-        src: `/${type}/${file}`
+        src: `/${type}/${file}`,
     }));
 }
 
 export async function load() {
 
+    const bodyImages = getSvgImagesFromDir('body');
     const facialHairImages = getSvgImagesFromDir('facial-hair');
     const hairstyleImages = getSvgImagesFromDir('head');
     const faceStyleImages = getSvgImagesFromDir('face');
     const accessoriesStyleImages = getSvgImagesFromDir('accessories');
     // Return the lists of images to the +page.svelte component
     return {
+        bodyImages,
         facialHairImages,
         hairstyleImages,
         faceStyleImages,

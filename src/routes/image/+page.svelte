@@ -4,41 +4,62 @@
     import { onMount } from 'svelte';
 	import { svgStore } from '../../stores/store.js';
 	import {goto} from '$app/navigation'; 
+	import { browser } from "$app/environment";
 	export let data;
     let svgElement;
 	let svgDataUrl = '';
+	let loading = true;
 
 	// Modal visibility state
 	let showFacialHairModal = false;
 	let showHairstyleModal = false;
 	let showAccModal = false;
 	let showFaceModal = false;
+	let showBodyModal = false;
 
 	// Selected IDs for each category
+	let selectedBodyId = null;
 	let selectedFacialHairId = null;
 	let selectedHairstyleId = null;
 	let selectedAccId = null;
 	let selectedFaceId = null;
 
 	// Destructure the images data from the props
-	let { facialHairImages, hairstyleImages, faceStyleImages, accessoriesStyleImages } = data;
+	let { bodyImages,facialHairImages, hairstyleImages, faceStyleImages, accessoriesStyleImages } = data;
 
-	// Function to load and display the SVG in the container
-    async function loadSVG(src) {
+	async function loadSVG(src) {
+    loading = true; // Set loading to true before fetching
+
+    try {
         const response = await fetch(src);
         const svgText = await response.text();
-        svgElement.innerHTML = svgText;
-		svgStore.set(svgText);
-        // Apply styles directly to the SVG element
-        const svg = svgElement.querySelector('svg');
-        if (svg) {
-            svg.style.width = '300px';
-            svg.style.height = '300px';
-            // svg.style.padding = '16px';
-            svg.style.border = '1px solid #ccc';
-			svg.style.backgroundColor = 'white';
+
+        if (svgElement) {
+            svgElement.innerHTML = svgText;
+            svgStore.set(svgText);
+
+            // Apply styles directly to the SVG element
+            const svg = svgElement.querySelector('svg');
+            if (svg) {
+                // Make sure the SVG scales responsively
+                svg.style.width = '240px';
+                svg.style.height = '240px';
+                svg.style.opacity = '0'; // Start with invisible
+                svg.style.transition = 'opacity 0.3s linear, transform 0.3s linear';
+
+                // Trigger the fade-in animation
+                requestAnimationFrame(() => {
+                    svg.style.opacity = '1';
+                    svg.style.transform = 'scale(1)';
+                });
+            }
         }
+    } catch (error) {
+        console.error('Error loading SVG:', error);
+    } finally {
+        loading = false; // Set loading to false after SVG is loaded
     }
+}
 
 	async function handleImageClick(image, idPrefix, selectedIdSetter) {
 		const response = await fetch(image.src);
@@ -67,31 +88,75 @@
 	const handleHairstyleClick = (image) => handleImageClick(image, 'head', id => selectedHairstyleId = id);
 	const handleAccClick = (image) => handleImageClick(image, 'accessories', id => selectedAccId = id);
 	const handleFaceClick = (image) => handleImageClick(image, 'face', id => selectedFaceId = id);
+	const handleBodyClick = (image) => handleImageClick(image, 'body', id => selectedBodyId = id);
 
 	function onTapMovePage(){
 		svgStore.set(svgElement.innerHTML);
-		goto('/');
+		goto('/info');
+	}
+
+	function onTapBackPage() {
+    	if (browser) window.history.back();
 	}
 </script>
 
 <style>
-    .svg-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-		margin-top: 20px;
-    }
-
+	.svg-container {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 240px;
+		height: 240px;
+		margin-top: 40px;
+		margin-bottom: 20px;
+		position: relative;
+		border: 1px solid #ccc;
+		background-color: white;
+		margin-left: auto;
+		margin-right: auto;
+		box-sizing: border-box; /* Ensure padding does not affect width/height */
+	}
 </style>
 
-<button on:click={() => (showFacialHairModal = true)}>Show Facial Hair Modal</button>
-<button on:click={() => (showHairstyleModal = true)}>Show Hairstyle Modal</button>
-<button on:click={() => (showAccModal = true)}>Show Acc Modal</button>
-<button on:click={() => (showFaceModal = true)}>Show Face Modal</button>
+
+<div class="svg-container" bind:this={svgElement}></div>
+<div class="container">
+	
+    <div class="row">
+        <div class="col-sm">
+            <button class="button button-primary" on:click={() => (showFacialHairModal = true)}>수염</button>
+        </div>
+        <div class="col-sm">
+            <button class="button button-primary" on:click={() => (showHairstyleModal = true)}>헤어스타일</button>
+        </div>
+        <div class="col-sm">
+            <button class="button button-primary" on:click={() => (showAccModal = true)}>악세사리</button>
+        </div>
+        
+    </div>
+	<div class="row">
+        <div class="col-sm">
+            <button class="button button-primary" on:click={() => (showFaceModal = true)}>표정</button>
+        </div>
+        <div class="col-sm">
+            <button class="button button-primary" on:click={() => (showBodyModal = true)}>상의</button>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col">
+            <button class="button button-primary" on:click={onTapBackPage}>페이지 뒤로가기</button>
+        </div>
+        <div class="col">
+            <button class="button button-primary" on:click={onTapMovePage}>페이지 이동</button>
+        </div>
+    </div>
+</div>
 
 <Modal 
 	bind:showModal={showFacialHairModal}
-	title="얼굴 형태 변경"
+	title="수염 변경"
 	images={facialHairImages}
 	onImageClick={handleFacialHairClick}
 	selectedImageId={selectedFacialHairId}
@@ -121,9 +186,16 @@
 	selectedImageId={selectedFaceId}
 />
 
-<div class="svg-container" bind:this={svgElement}></div>
+<Modal 
+	bind:showModal={showBodyModal}
+	title="상의 변경"
+	images={bodyImages}
+	onImageClick={handleBodyClick}
+	selectedImageId={selectedBodyId}
+/>
 
-<button on:click={onTapMovePage}>페이지 이동</button>
+
+
 
 
 

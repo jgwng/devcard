@@ -22,7 +22,7 @@
 >
 	<div on:click|stopPropagation>
 		<div class="modal-header">
-			<h2 style="margin-bottom:0px">{title}</h2>
+			<div style="margin-bottom:0px;font-size:18px;">{title}</div>
 			<button class="close-button" on:click={() => dialog.close()} aria-label="Close">&times;</button>
 		</div>
 		<div class="grid">
@@ -40,7 +40,7 @@
 
 <style>
 	dialog {
-		max-width: 40em;
+		max-width: 480px;
 		border-radius: 0.2em;
 		border: none;
 		padding: 0;
