@@ -5,10 +5,20 @@
     import { goto } from '$app/navigation';
 
     let userInfo = {};
-    let name = '';
+        // Define the fields in a JSON object
+    const fields = [
+        { name: 'name', label: '이름', placeholder: 'Enter your Name' },
+        { name: 'position', label: '직책', placeholder: 'Enter your Position' },
+        { name: 'company', label: '회사', placeholder: 'Enter your Company' },
+        { name: 'email', label: '이메일', placeholder: 'Enter your Email' },
+        { name: 'github', label: 'Github', placeholder: 'Enter your Github URL' }
+    ];
+    function clearInput(fieldName) {
+        userInfo[fieldName] = '';
+    }
 
-    function clearInput() {
-        name= '';
+    function onTapBackPage() {
+        if (browser) window.history.back();
     }
 
     function onSubmit(e) {
@@ -25,6 +35,7 @@
                 firstEmptyField = key;
             }
         }
+
         if (firstEmptyField) {
             // If an empty field was found, focus it
             const inputElement = e.target.querySelector(`input[name='${firstEmptyField}']`);
@@ -38,81 +49,42 @@
         }
     }
 
-    
-    onMount(()=> {
+    onMount(() => {
         userInfo = get(user);
-        var element = document.querySelector('input[name=name]');
-        element.focus();
-        console.log('userInfo : ' + userInfo);
     });
 </script>
 
-<form class="form" on:submit|preventDefault={onSubmit}>
-    <div class="flex-column">
-        <label for="name">이름</label>
-        <div class="inputForm">
-            <input
-                type="text"
-                class="input"
-                placeholder="Enter your Email"
-                name="name"
-                bind:value={userInfo.name}
-            />
-            <span class="clear-icon" on:click={() => (userInfo.name = '')}>&#x2715;</span>
+<form on:submit|preventDefault={onSubmit} style="padding-left:16px;padding-right:16px;">
+    <div class="option-container">
+        <div class="option-top">
+            <span>정보 입력</span>
+        </div>
+        <div class="container" style="padding-left:12px;padding-right:12px;padding-top:16px; padding-bottom:32px;">
+            {#each fields as { name, label, placeholder }}
+                <div class="flex-column">
+                    <label for={name}>{label}</label>
+                    <div class="inputForm">
+                        <input
+                            type="text"
+                            class="input"
+                            placeholder={placeholder}
+                            name={name}
+                            bind:value={userInfo[name]}
+                        />
+                        <span class="clear-icon" on:click={() => clearInput(name)}>&#x2715;</span>
+                    </div>
+                </div>
+            {/each}
         </div>
     </div>
-    <div class="flex-column">
-        <label for="position">직책</label>
-        <div class="inputForm">
-            <input
-                type="text"
-                class="input"
-                placeholder="Enter your Email"
-                name="position"
-                bind:value={name}
-            />
-            <span class="clear-icon" on:click={() => (userInfo.position = '')}>&#x2715;</span>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <button class="button button-primary" on:click={onTapBackPage}>페이지 뒤로가기</button>
+            </div>
+            <div class="col">
+                <button type="submit" class="button button-primary">페이지 이동</button>
+            </div>
         </div>
     </div>
-    <div class="flex-column">
-        <label for="company">회사</label>
-        <div class="inputForm">
-            <input
-                type="text"
-                class="input"
-                placeholder="Enter your Email"
-                name="company"
-                bind:value={userInfo.company}
-            />
-            <span class="clear-icon" on:click={() => (userInfo.company = '')}>&#x2715;</span>
-        </div>
-    </div>
-    <div class="flex-column">
-        <label for="email">이메일</label>
-        <div class="inputForm">
-            <input
-                type="text"
-                class="input"
-                placeholder="Enter your Email"
-                name="email"
-                bind:value={userInfo.email}
-            />
-            <span class="clear-icon" on:click={() => (userInfo.email = '')}>&#x2715;</span>
-        </div>
-    </div>
-    <div class="flex-column">
-        <label for="github">Github</label>
-        <div class="inputForm">
-            <input
-                type="text"
-                class="input"
-                placeholder="Enter your Email"
-                name="email"
-                bind:value={userInfo.github}
-            />
-            <span class="clear-icon" on:click={() => (userInfo.github = '')}>&#x2715;</span>
-        </div>
-    </div>
-    <button type="submit" class="button button-primary">데이터 변경</button>
-</form>    
-
+</form>

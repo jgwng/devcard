@@ -1,10 +1,11 @@
 <script>
-	import Modal from './component/Modal.svelte';
+	import Modal from './component/modal.svelte';
 	import ImgElement from './component/svg_to_img.svelte';
     import { onMount } from 'svelte';
-	import { svgStore } from '../../stores/store.js';
+	import { svgStore, isMobile } from '../../stores/store.js';
 	import {goto} from '$app/navigation'; 
 	import { browser } from "$app/environment";
+    import { get } from 'svelte/store';
 	export let data;
     let svgElement;
 	let svgDataUrl = '';
@@ -100,60 +101,60 @@
 	}
 </script>
 
-<style>
-	.svg-container {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 240px;
-		height: 240px;
-		margin-top: 40px;
-		margin-bottom: 20px;
-		position: relative;
-		border: 1px solid #ccc;
-		background-color: white;
-		margin-left: auto;
-		margin-right: auto;
-		box-sizing: border-box; /* Ensure padding does not affect width/height */
-	}
-</style>
-
-
-<div class="svg-container" bind:this={svgElement}></div>
-<div class="container">
-	
-    <div class="row">
-        <div class="col-sm">
-            <button class="button button-primary" on:click={() => (showFacialHairModal = true)}>수염</button>
-        </div>
-        <div class="col-sm">
-            <button class="button button-primary" on:click={() => (showHairstyleModal = true)}>헤어스타일</button>
-        </div>
-        <div class="col-sm">
-            <button class="button button-primary" on:click={() => (showAccModal = true)}>악세사리</button>
-        </div>
-        
-    </div>
-	<div class="row">
-        <div class="col-sm">
-            <button class="button button-primary" on:click={() => (showFaceModal = true)}>표정</button>
-        </div>
-        <div class="col-sm">
-            <button class="button button-primary" on:click={() => (showBodyModal = true)}>상의</button>
-        </div>
-    </div>
-
-
-    <div class="row">
-        <div class="col">
-            <button class="button button-primary" on:click={onTapBackPage}>페이지 뒤로가기</button>
-        </div>
-        <div class="col">
-            <button class="button button-primary" on:click={onTapMovePage}>페이지 이동</button>
-        </div>
-    </div>
+<div class="option-container">
+	<div class="option-top">
+		<span>이미지 변경</span>
+	</div>
+	<div class="svg-container" bind:this={svgElement}></div>
+	<div class= "container" style="padding-left:16px;padding-right:16px;">
+		<div class="col">
+			<button class="button button-list" on:click={() => (showFacialHairModal = true)}>
+				수염
+			</button>
+		</div>
+	</div>
+	<div class= "container"  style="padding-left:16px;padding-right:16px;">
+		<div class="col">
+			<button class="button button-list" on:click={() => (showHairstyleModal = true)}>
+				헤어스타일
+			</button>
+		</div>
+	</div>
+	<div class= "container"  style="padding-left:16px;padding-right:16px;">
+		<div class="col">
+			<button class="button button-list" on:click={() => (showAccModal = true)}>
+				악세서리
+			</button>
+		</div>
+	</div>
+	<div class= "container" style="padding-left:16px;padding-right:16px;">
+		<div class="col">
+			<button class="button button-list" on:click={() => (showFaceModal = true)}>
+				표정
+			</button>
+		</div>
+	</div>
+	<div class= "container" style="padding-left:16px;padding-right:16px;">
+		<div class="col">
+			<button class="button button-list" on:click={() => (showBodyModal = true)}>
+				상의
+			</button>
+		</div>
+	</div>
 </div>
 
+<div class="container">
+	<div class="row">
+		<div class="col">
+			<button class="button button-primary" on:click={onTapBackPage}>페이지 뒤로가기</button>
+		</div>
+		<div class="col">
+			<button class="button button-primary" on:click={onTapMovePage}>페이지 이동</button>
+		</div>
+	</div>
+</div>
+
+{#if showFacialHairModal}
 <Modal 
 	bind:showModal={showFacialHairModal}
 	title="수염 변경"
@@ -161,15 +162,20 @@
 	onImageClick={handleFacialHairClick}
 	selectedImageId={selectedFacialHairId}
 />
+{/if}
 
+{#if showHairstyleModal}
 <Modal 
 	bind:showModal={showHairstyleModal}
 	title="헤어스타일 변경"
+	columns={get(isMobile) ? 5 : 6} 
 	images={hairstyleImages}
 	onImageClick={handleHairstyleClick}
 	selectedImageId={selectedHairstyleId}
 />
+{/if}
 
+{#if showAccModal}
 <Modal 
 	bind:showModal={showAccModal}
 	title="악세사리 변경"
@@ -177,7 +183,9 @@
 	onImageClick={handleAccClick}
 	selectedImageId={selectedAccId}
 />
+{/if}
 
+{#if showFaceModal}
 <Modal 
 	bind:showModal={showFaceModal}
 	title="얼굴형 변경"
@@ -185,7 +193,9 @@
 	onImageClick={handleFaceClick}
 	selectedImageId={selectedFaceId}
 />
+{/if}
 
+{#if showBodyModal}
 <Modal 
 	bind:showModal={showBodyModal}
 	title="상의 변경"
@@ -193,7 +203,7 @@
 	onImageClick={handleBodyClick}
 	selectedImageId={selectedBodyId}
 />
-
+{/if}
 
 
 
