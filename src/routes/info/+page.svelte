@@ -54,7 +54,7 @@
     });
 </script>
 
-<form on:submit|preventDefault={onSubmit} style="padding-left:16px;padding-right:16px;">
+<form on:submit|preventDefault={onSubmit} >
     <div class="option-container">
         <div class="option-top">
             <span>정보 입력</span>

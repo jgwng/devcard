@@ -3,6 +3,7 @@
     import { get } from 'svelte/store';
     import { user,isMobile } from '../../stores/store.js';
     import html2canvas from 'html2canvas';
+    import DevCard from './component/devcard.svelte';
     import './cardStyle.css';
 
     let flipCard = false;
@@ -10,7 +11,7 @@
     let userInfo = {};
     let imgSrc = ''; // To store the data URL of the captured image
     let showBottomSheet = false; // To control the visibility of the bottom sheet
-
+    let isMobileValue;
     function handleMouseOver() {
         flipCard = !flipCard;
     }
@@ -39,13 +40,20 @@
 
     onMount(() => {
         loadSVG(`/bust.svg`);
+        isMobileValue = get(isMobile);
+        if (isMobileValue === null || isMobileValue === undefined) {
+            isMobileValue = isMobileDevice();
+        }
         userInfo = get(user);
     });
+    function isMobileDevice() {
+        return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
   
     async function downloadCardAsImage() {
-        
-        if (get(isMobile)) {
-            showBottomSheet = true; // Show bottom sheet on mobile
+        if (isMobileValue || isMobileDevice()) {
+            // Show bottom sheet on mobile
+            showBottomSheet = true;
         } else {
             // Proceed with direct image download on non-mobile devices
             const link = document.createElement('a');
@@ -125,6 +133,8 @@
     <div class="card-back" class:flipped={flipCard} bind:this={svgElement}>
     </div>
 </div>
+
+<DevCard></DevCard>
 
 <div style="padding:24px; 0px;">
     <button class="button button-primary" on:click={downloadCardAsImage}>Download Card as Image</button>
