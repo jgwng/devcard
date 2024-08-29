@@ -103,7 +103,7 @@
 
 <div class="option-container">
 	<div class="option-top">
-		<span>이미지 변경</span>
+		<span>이미지 설정</span>
 	</div>
 	<div class="svg-container" bind:this={svgElement}></div>
 	<div class= "container" style="padding-left:16px;padding-right:16px;">

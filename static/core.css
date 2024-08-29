@@ -20,13 +20,13 @@ body {
   width: 100%;    
   height: 100%;        
   box-sizing: border-box; 
-  background-color: white !important;
+  background-color: #EFE9E9;
 }
 
 @media only screen and (max-width: 600px) {
   
   html, body, .svelte-view {
     height: 100%; 
-    background-color:white !important;  
+    background-color: #EFE9E9 !important;
   }
 }

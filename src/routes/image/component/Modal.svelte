@@ -23,7 +23,7 @@
     <div class="modal-overlay" on:click={close}>
         <div class="modal-content" on:click|stopPropagation>
             <div class="modal-header">
-                <div style="margin-bottom:0px;font-size:18px;">{title}</div>
+                <div class="modal-title">{title}</div>
                 <button class="close-button" on:click={close} aria-label="Close">&times;</button>
             </div>
             <div class="grid" style={`grid-template-columns: repeat(${columns}, 1fr);`}>
@@ -62,6 +62,11 @@
         width: 90%;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         position: relative;
+    }
+    .modal-title{
+        margin-bottom:0px;
+        font-size:18px;
+        font-family: 'Dosis';
     }
 
     .grid {
@@ -108,7 +113,8 @@
         cursor: pointer;
         color: #333;
         display: flex;
-        align-items: center; /* Vertically center the 'x' inside the button */
+        align-items: center;
+        padding-right:0px !important;
     }
 
     .close-button:hover {
